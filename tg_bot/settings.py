@@ -25,8 +25,12 @@ SECRET_KEY = 'django-insecure-ocj%*_-^(6nr%4bs(fs)w1=rd49_kmbd45z7cf2uyc57de2&65
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['SadRus.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'SadRus.pythonanywhere.com',
+    '127.0.0.1',
+]
 
+TELEGRAM_TOKEN = '6284739514:AAHu_-o96uslnQm822ND2e6BnOeO3NTShm0'
 
 # Application definition
 
