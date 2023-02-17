@@ -15,7 +15,7 @@ from php_support.models import Task, Client, Status, Devman
 def main():
     load_dotenv()
 
-    token = '5973930091:AAFjdWwIWWy-8BYXGBxrEjhHk_VVuMh2uVc'
+    token = os.getenv('TG_BOT_TOKEN')
     bot = telebot.TeleBot(token)
 
     @bot.message_handler(commands=['start'])
@@ -45,30 +45,31 @@ def main():
 
     @bot.message_handler(content_types='text')
     def message_reply(message):
+        user_id = message.from_user.id
         if message.text == "Исполнитель":
-            devman = Devman(
+            devman = Devman.objects.get_or_create(
                 name = message.from_user.username,
-                user_id = message.from_user.id,
-            )
-            devman.save()
-            bot.send_message(message.chat.id, "Выбирай задание из списка и вперед зарабатывать бабки!")
+                user_id = user_id,
+                )
+            bot.send_message(message.chat.id, "Выбирай задание из списка!")
         elif message.text == "Заказчик":
-            client = Client(
+            client = Client.objects.get_or_create(
                 name = message.from_user.username,
-                user_id = message.from_user.id,
+                user_id = user_id,
             )
-            client.save()
             bot.send_message(message.chat.id, "Пиши задание, будем искать тебе помощь!")
         elif '-' in message.text:
             taskname, description = message.text.split('-')
+            client = Client.objects.get(user_id=user_id)
+            status = Status.objects.get(name='Created')
             task = Task(
-                client = None,
+                client = client,
                 devman = None,
                 title = taskname,
                 description = description,
                 date_start = timezone.now(),
                 date_end = timezone.now(),
-                status = None,
+                status = status,
             )
             task.save()
 
