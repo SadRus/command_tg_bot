@@ -15,6 +15,15 @@ pip install -r requirements.txt
 ### Авторизация
 TODO
 
+### Использование
+Для запуска бота используйте  **`python`** (или **`python3`**):
+```bash
+python manage.py runbot
+```
+Для запуска админки используйте  **`python`** (или **`python3`**):
+```bash
+python manage.py runserver
+```
 ### Примеры
 
 TODO
