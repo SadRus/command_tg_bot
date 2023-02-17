@@ -30,8 +30,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-TELEGRAM_TOKEN = '6284739514:AAHu_-o96uslnQm822ND2e6BnOeO3NTShm0'
-
 # Application definition
 
 INSTALLED_APPS = [
