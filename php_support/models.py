@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Client(models.Model):
-    name = models.CharField('Имя', max_length=50)
+    username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
     user_id = models.IntegerField(
         'User_id',
@@ -11,11 +11,11 @@ class Client(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Devman(models.Model):
-    name = models.CharField('Имя', max_length=50)
+    username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
     user_id = models.IntegerField(
         'User_id',
@@ -24,7 +24,7 @@ class Devman(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.username
 
 
 class Task(models.Model):

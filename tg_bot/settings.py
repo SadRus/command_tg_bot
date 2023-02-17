@@ -30,8 +30,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-TELEGRAM_TOKEN = '6284739514:AAHu_-o96uslnQm822ND2e6BnOeO3NTShm0'
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -120,7 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

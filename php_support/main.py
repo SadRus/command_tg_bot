@@ -2,9 +2,9 @@ import os
 import telebot
 
 from dotenv import load_dotenv
-from django.utils import timezone
 from telebot import types
 from telebot.callback_data import CallbackData, CallbackDataFilter
+from php_support import db_processing
 from php_support.models import Task, Client, Status, Devman
 
 
@@ -15,7 +15,7 @@ from php_support.models import Task, Client, Status, Devman
 def main():
     load_dotenv()
 
-    token = '5973930091:AAFjdWwIWWy-8BYXGBxrEjhHk_VVuMh2uVc'
+    token = os.getenv('TG_BOT_TOKEN')
     bot = telebot.TeleBot(token)
 
     @bot.message_handler(commands=['start'])
@@ -29,7 +29,7 @@ def main():
 
 
     @bot.message_handler(commands=['create_task'])
-    def create_task(message):
+    def create_task_command(message):
         bot.send_message(message.chat.id, 'Great! Create the task. Use format:\ntaskname - description')
 
 
@@ -45,35 +45,29 @@ def main():
 
     @bot.message_handler(content_types='text')
     def message_reply(message):
+        username = message.from_user.username
+        user_id = message.from_user.id
+
         if message.text == "Исполнитель":
-            devman = Devman(
-                name = message.from_user.username,
-                user_id = message.from_user.id,
-            )
-            devman.save()
-            bot.send_message(message.chat.id, "Выбирай задание из списка и вперед зарабатывать бабки!")
+            db_processing.create_devman(username, user_id)
+            bot.send_message(message.chat.id, "Выбирай задание из списка!")
+
         elif message.text == "Заказчик":
-            client = Client(
-                name = message.from_user.username,
-                user_id = message.from_user.id,
-            )
-            client.save()
+            db_processing.create_client(username, user_id)
             bot.send_message(message.chat.id, "Пиши задание, будем искать тебе помощь!")
+
         elif '-' in message.text:
             taskname, description = message.text.split('-')
-            task = Task(
-                client = None,
-                devman = None,
-                title = taskname,
-                description = description,
-                date_start = timezone.now(),
-                date_end = timezone.now(),
-                status = None,
-            )
-            task.save()
+            client = Client.objects.get(user_id=user_id)
+            status = Status.objects.get(name='Created')
 
-            bot.send_message(message.chat.id, f'Taskname: {taskname} created')
-
+            db_processing.create_task(client, taskname, description, status)
+            bot.send_message(message.chat.id, f'Task: {taskname} created')
+    
+    # @bot.message_handler(regexp='\w+ - .+')
+    # def create_task(message):
+    #     create_task(**kwargs)
+    #     bot.send_message(message.chat.id, f'Taskname: {taskname} created')
 
     bot.infinity_polling()
 
