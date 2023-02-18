@@ -62,7 +62,7 @@ def main():
             )
         elif message.text == 'Актуальные задачи':
             markup = types.InlineKeyboardMarkup()
-            for task in db_processing.get_created_task():
+            for task in db_processing.get_created_tasks():
                 item = types.InlineKeyboardButton(task.title , callback_data='Тест1')
                 markup.add(item)
             bot.send_message(
@@ -98,7 +98,16 @@ def main():
                 message.chat.id,
                 f'Задача {taskname} создана',
             )
-     
+        elif message.text == 'Мои задачи':
+            markup = types.InlineKeyboardMarkup()
+            for task in db_processing.get_my_tasks(user_id):
+                item = types.InlineKeyboardButton(task.title , callback_data='Тест1')
+                markup.add(item)
+            bot.send_message(
+                message.chat.id,
+                'Мои задачи',
+                reply_markup=markup,
+            )
 
     bot.infinity_polling()
 
