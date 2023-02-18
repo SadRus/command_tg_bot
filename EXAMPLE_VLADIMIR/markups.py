@@ -39,13 +39,13 @@ def help_inline_keyboard():
     return help_inline_keyboard.add(btn_description, btn_contact_us)
 
 
-
 def help_inline_keyboard_for_contractor():
     """
     Сценарий: кнопка для отправки вопроса Заказчику,
     прикрепляется к каждому заданию Исполнителя, имеющему статус 'в работе'
     """
     task_help_keyboard = types.InlineKeyboardMarkup(row_width=1)
-    btn_task_help = types.KeyboardButton(text='нужна информация', callback_data='btn_task_help')
-    return task_help_keyboard.add(btn_task_help)
+    btn_task_help = types.InlineKeyboardButton(text='нужна информация', callback_data='task_help')
+    btn_task_close = types.InlineKeyboardButton(text='завершить', callback_data='task_close')
+    return task_help_keyboard.add(btn_task_help, btn_task_close)
 
