@@ -3,7 +3,7 @@ import telebot
 
 from dotenv import load_dotenv
 from telebot import types
-# from telebot.callback_data import CallbackData, CallbackDataFilter
+from telebot.callback_data import CallbackData, CallbackDataFilter
 from php_support import db_processing
 from php_support.models import Task, Client, Status, Devman
 
@@ -101,13 +101,20 @@ def main():
         elif message.text == 'Мои задачи':
             markup = types.InlineKeyboardMarkup()
             for task in db_processing.get_my_tasks(user_id):
-                item = types.InlineKeyboardButton(task.title , callback_data='Тест1')
+                item = types.InlineKeyboardButton(task.title , callback_data='to_task')
                 markup.add(item)
             bot.send_message(
                 message.chat.id,
                 'Мои задачи',
                 reply_markup=markup,
             )
+
+    @bot.callback_query_handler(func=lambda f: f.data == 'to_task')
+    def callback_button1(callback_query: types.CallbackQuery):
+        if Devman.objects.get(user_id=callback_query.from_user.id).is_access:
+            bot.send_message(callback_query.from_user.id, 'Тут переход на задание')
+        else:
+            bot.answer_callback_query(callback_query.id, show_alert=True, text='У вас нет доступа, оплатите подписку')
 
     bot.infinity_polling()
 
