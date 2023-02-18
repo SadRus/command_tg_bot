@@ -25,9 +25,12 @@ def create_client(username, user_id):
         user_id = user_id,
     )
 
+def get_created_tasks():
+    return Task.objects.filter(status__name='Created')
 
-def get_created_task():
-    return Task.objects.filter(status='Created')
+def get_my_tasks(user_id):
+    return Task.objects.filter(client__user_id=user_id)
+
 
 # def check_for_access(username):
 #     return users.objects.filter(name=username).is_access
