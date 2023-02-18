@@ -49,35 +49,3 @@ def help_inline_keyboard_for_contractor():
     btn_task_help = types.KeyboardButton(text='нужна информация', callback_data='btn_task_help')
     return task_help_keyboard.add(btn_task_help)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# user_id = 283111605
-#
-# # user_category = ''
-# registrated_users = {
-#         # 'admin': [283111606, ],
-#         'clients': [283111606, 283111607, ],
-#         'contractors': [283111606, 283111608, ]
-#     }
-# try:
-#     user_category = [category for category in registrated_users if user_id in registrated_users[category]][0]
-# except IndexError:
-#     user_category = None
-#
-# print(user_category)
