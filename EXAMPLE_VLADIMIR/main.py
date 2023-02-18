@@ -64,11 +64,29 @@ def help(message):
     bot.send_message(message.chat.id, reference, reply_markup=markups.help_inline_keyboard())
 
 
-
+# --------- Вариант без удаления сообщения
 @bot.callback_query_handler(func=lambda callback: callback.data)
 def check_callback_data(callback):
-    if callback.data == 'btn_task_help':
-        bot.send_message(callback.message.chat.id, 'Введите свой вопрос, отправим заказчику')
+    if callback.data == 'task_help':
+        bot.send_message(callback.message.chat.id,
+                         text='Введите свой вопрос, отправим заказчику')
+    elif callback.data == 'task_close':
+        bot.send_message(callback.message.chat.id,
+                         text='Статус изменен на "завершена". Требуется подтверждение клиента.')
+
+# -------------- Вариант с удалением сообщения
+@bot.callback_query_handler(func=lambda callback:True)
+def check_callback(callback):
+    if callback.message:
+        if callback.data == 'task_help':
+            bot.edit_message_text(chat_id=callback.message.chat.id,
+                                  message_id=callback.message.id,
+                                  text='Введите свой вопрос, отправим заказчику')
+
+        elif callback.data == 'task_close':
+            bot.edit_message_text(chat_id=callback.message.chat.id,
+                                  message_id=callback.message.id,
+                                  text='Статус изменен на "завершена". Требуется подтверждение клиента.')
 
 
 bot.infinity_polling()

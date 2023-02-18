@@ -14,6 +14,11 @@ class Client(models.Model):
         return self.username
 
 
+    class Meta:
+        verbose_name = 'Заказчик'
+        verbose_name_plural = 'Заказчики'
+
+
 class Devman(models.Model):
     username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
@@ -25,6 +30,11 @@ class Devman(models.Model):
 
     def __str__(self):
         return self.username
+
+
+    class Meta:
+        verbose_name = 'Подрядчик'
+        verbose_name_plural = 'Подрядчики'
 
 
 class Task(models.Model):
@@ -59,6 +69,10 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = 'Задание'
+        verbose_name_plural = 'Задания'
 
 
 class Status(models.Model):
