@@ -31,6 +31,9 @@ def get_created_tasks():
 def get_my_tasks(user_id):
     return Task.objects.filter(client__user_id=user_id)
 
+# def take_task(user_id):
+    # task = Devman.objects.get(user_id=user_id)
+    # task.save()
 
 # def check_for_access(username):
 #     return users.objects.filter(name=username).is_access
