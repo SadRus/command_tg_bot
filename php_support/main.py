@@ -39,6 +39,9 @@ def main():
             reply_markup=markup,
         )
 
+    # @bot.message_handler(regexp=r'\w+ - .+')
+    # def create_task(message):
+    #     bot.send_message(message.chat.id, f'Taskname: created')
 
     @bot.message_handler(content_types='text')
     def message_reply(message):
@@ -47,11 +50,27 @@ def main():
 
         # Функционал исполнителя (условное разделение)
         if message.text == 'Исполнитель':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            my_tasks = types.KeyboardButton('Мои задачи')            
+            check_tasks = types.KeyboardButton('Актуальные задачи')
+            markup.add(my_tasks, check_tasks)
             db_processing.create_devman(username, user_id)
             bot.send_message(
                 message.chat.id,
                 'Выбирай задание из списка!',
+                reply_markup=markup,
             )
+        elif message.text == 'Актуальные задачи':
+            markup = types.InlineKeyboardMarkup()
+            for task in db_processing.get_created_task():
+                item = types.InlineKeyboardButton(task.title , callback_data='Тест1')
+                markup.add(item)
+            bot.send_message(
+                message.chat.id,
+                'Актуальные задачи',
+                reply_markup=markup,
+            )
+
 
         # Функционал заказчика (условное разделение)
         elif message.text == 'Заказчик':
@@ -79,23 +98,7 @@ def main():
                 message.chat.id,
                 f'Задача {taskname} создана',
             )
-        elif message.text == 'Мои задачи':
-            markup = types.InlineKeyboardMarkup()
-            item1 = types.InlineKeyboardButton('Заглушка1', callback_data='Тест1')
-            item2 = types.InlineKeyboardButton('Заглушка2', callback_data='Тест2')
-            item3 = types.InlineKeyboardButton('Заглушка3', callback_data='Тест3')
-            item4 = types.InlineKeyboardButton('Заглушка4', callback_data='Тест4')
-            markup.add(item1, item2, item3, item4)
-            bot.send_message(
-                message.chat.id,
-                'Мои задачи',
-                reply_markup=markup,
-            )
      
-    # @bot.message_handler(regexp='\w+ - .+')
-    # def create_task(message):
-    #     create_task(**kwargs)
-    #     bot.send_message(message.chat.id, f'Taskname: {taskname} created')
 
     bot.infinity_polling()
 
