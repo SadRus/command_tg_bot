@@ -3,10 +3,13 @@ import telebot
 
 from dotenv import load_dotenv
 from telebot import types
-from telebot.callback_data import CallbackData, CallbackDataFilter
-from php_support import db_processing
+from php_support import db_processing, markups
 from php_support.models import Task, Client, Status, Devman
 
+
+# @bot.message_handler(regexp=r'\w+ - .+')
+# def create_task(message):
+#     bot.send_message(message.chat.id, f'Taskname: created')
 
 def main():
     load_dotenv()
@@ -16,74 +19,74 @@ def main():
 
     @bot.message_handler(commands=['start'])
     def start(message):
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton('Исполнитель')
-        item2 = types.KeyboardButton('Заказчик')
-        markup.add(item1, item2)
         bot.send_message(
             message.chat.id,
             'Мы рады приветствовать вас! Кем вы являетесь?',
-            reply_markup=markup,
+            reply_markup=markups.start_keyboard_for_all_users(),
         )
-
-
-    @bot.message_handler(commands=['button'])
-    def button_message(message):
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton('Исполнитель')
-        item2 = types.KeyboardButton('Заказчик')
-        markup.add(item1, item2)
-        bot.send_message(
-            message.chat.id,
-            'Кем вы являетесь?',
-            reply_markup=markup,
-        )
-
-    # @bot.message_handler(regexp=r'\w+ - .+')
-    # def create_task(message):
-    #     bot.send_message(message.chat.id, f'Taskname: created')
 
     @bot.message_handler(content_types='text')
     def message_reply(message):
         username = message.from_user.username
         user_id = message.from_user.id
-
         # Функционал исполнителя (условное разделение)
-        if message.text == 'Исполнитель':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            my_tasks = types.KeyboardButton('Мои задачи')            
-            check_tasks = types.KeyboardButton('Актуальные задачи')
-            markup.add(my_tasks, check_tasks)
+        if message.text == 'Подрядчик':
             db_processing.create_devman(username, user_id)
-            bot.send_message(
-                message.chat.id,
-                'Выбирай задание из списка!',
-                reply_markup=markup,
-            )
+            if Devman.objects.get(user_id=message.from_user.id).is_access:
+                bot.send_message(
+                    message.chat.id,
+                    'Используйте меню для навигации',
+                    reply_markup=markups.start_keyboard_for_devman(),
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Отказано в доступе. Обратитесь к администратору.',
+                )
         elif message.text == 'Актуальные задачи':
-            markup = types.InlineKeyboardMarkup()
-            for task in db_processing.get_created_tasks():
-                item = types.InlineKeyboardButton(task.title , callback_data='Тест1')
-                markup.add(item)
-            bot.send_message(
-                message.chat.id,
-                'Актуальные задачи',
-                reply_markup=markup,
-            )
+            for task in db_processing.get_created_tasks(user_id):
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton('взять в работу', callback_data=f'take_task{task.id}')
+                item2 = types.InlineKeyboardButton('посмотреть', callback_data='btn2')
+                markup.add(item1, item2)
+                bot.send_message(
+                    message.chat.id,
+                    text = f'{task.title} - {task.description}',
+                    reply_markup=markup,
+                )
+        elif message.text == 'Принятые в работу':
+            for task in db_processing.get_devman_inprogress_tasks(user_id):
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton('задать вопрос', callback_data='btn1')
+                item2 = types.InlineKeyboardButton('завершить', callback_data=f'end_task{task.id}')
+                markup.add(item1, item2)
+                bot.send_message(
+                    message.chat.id,
+                    text = f'Заголовок: {task.title}\nОписание: {task.description}',
+                    reply_markup=markup,
+                )
+        elif message.text == 'Завершенные задачи':
+            for task in db_processing.get_devman_done_tasks(user_id):
+                bot.send_message(
+                    message.chat.id,
+                    text = f'Заголовок: {task.title}\nОписание: {task.description}',
+                )
 
 
         # Функционал заказчика (условное разделение)
         elif message.text == 'Заказчик':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            check_tasks = types.KeyboardButton('Мои задачи')
-            create_task = types.KeyboardButton('Создать задачу')
-            markup.add(check_tasks, create_task)
             db_processing.create_client(username, user_id)
-            bot.send_message(
-                message.chat.id,
-                'Используйте меню для навигации',
-                reply_markup=markup,
-            )
+            if Client.objects.get(user_id=message.from_user.id).is_access:
+                bot.send_message(
+                    message.chat.id,
+                    'Используйте меню для навигации',
+                    reply_markup=markups.start_keyboard_for_client(),
+                )
+            else:
+                bot.send_message(
+                    message.chat.id,
+                    'Отказано в доступе. Обратитесь к администратору.',
+                )
         elif message.text == 'Создать задачу':
             bot.send_message(
                 message.chat.id,
@@ -98,23 +101,71 @@ def main():
                 message.chat.id,
                 f'Задача {taskname} создана',
             )
-        elif message.text == 'Мои задачи':
-            markup = types.InlineKeyboardMarkup()
-            for task in db_processing.get_my_tasks(user_id):
-                item = types.InlineKeyboardButton(task.title , callback_data='to_task')
-                markup.add(item)
-            bot.send_message(
-                message.chat.id,
-                'Мои задачи',
-                reply_markup=markup,
-            )
+        elif message.text == 'Размещенные задачи':
+            for task in db_processing.get_created_tasks(user_id):
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton('дополнить', callback_data='btn1')
+                item2 = types.InlineKeyboardButton('отменить', callback_data='btn2')
+                markup.add(item1, item2)
+                bot.send_message(
+                    message.chat.id,
+                    text = f'Заголовок: {task.title}\nОписание: {task.description}',
+                    reply_markup=markup,
+                )
+        elif message.text == 'В работе':
+            for task in db_processing.get_client_inprogress_tasks(user_id):
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton('дополнить', callback_data='btn1')
+                markup.add(item1)
+                bot.send_message(
+                    message.chat.id,
+                    text = f'Заголовок: {task.title}\nОписание: {task.description}',
+                    reply_markup=markup,
+                )
+        elif message.text == 'Завершено':
+            for task in db_processing.get_client_done_tasks(user_id):
+                print(user_id)
+                markup = types.InlineKeyboardMarkup()
+                item1 = types.InlineKeyboardButton('добавить отзыв', callback_data='btn1')
+                markup.add(item1)
+                bot.send_message(
+                    message.chat.id,
+                    text = f'Заголовок: {task.title}\nОписание: {task.description}',
+                    reply_markup=markup,
+                )
 
-    @bot.callback_query_handler(func=lambda f: f.data == 'to_task')
+    # Обработчик inlinekeyboard (условное разделение)
+    @bot.callback_query_handler(func=lambda f: True)
     def callback_button1(callback_query: types.CallbackQuery):
-        if Devman.objects.get(user_id=callback_query.from_user.id).is_access:
-            bot.send_message(callback_query.from_user.id, 'Тут переход на задание')
+        if Devman.objects.get(user_id=callback_query.from_user.id).is_access or \
+        Client.objects.get(user_id=callback_query.from_user.id).is_access:
+            if 'take_task' in callback_query.data:
+                task_id = int(callback_query.data[9:])
+                task = Task.objects.get(id=task_id)
+                task.devman = Devman.objects.get(user_id=callback_query.from_user.id)
+                task.status = Status.objects.get(name='In progress')
+                task.save()
+                bot.answer_callback_query(
+                    callback_query.id,
+                    'Задача взята в работу',
+                )
+            elif 'end_task' in callback_query.data:
+                task_id = int(callback_query.data[8:])
+                task = Task.objects.get(id=task_id)
+                task.status = Status.objects.get(name='Done')
+                task.save()
+                bot.answer_callback_query(
+                    callback_query.id,
+                    'Задача сдана заказчику',
+                )       
+            else:
+                pass
         else:
-            bot.answer_callback_query(callback_query.id, show_alert=True, text='У вас нет доступа, оплатите подписку')
+            bot.answer_callback_query(
+                callback_query.id,
+                show_alert=True,
+                text='У вас нет доступа, оплатите подписку',
+            )
 
     bot.infinity_polling()
 
