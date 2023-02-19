@@ -4,6 +4,7 @@ from django.db import models
 class Client(models.Model):
     username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
+    pay = models.IntegerField('Ставка', default=1000)
     user_id = models.IntegerField(
         'User_id',
         null=True,
@@ -46,6 +47,16 @@ class Task(models.Model):
     )
     title = models.CharField('Название', max_length=200)
     description = models.TextField('Описание')
+    note = models.TextField(
+        'Примечание',
+        null=True,
+        blank=True,
+        )
+    questions = models.TextField(
+        'Вопросы от подрядчика',
+        null=True,
+        blank=True,        
+        )
     date_start = models.DateTimeField('Дата и время начала')
     date_end = models.DateTimeField('Дата и время конца')
     status = models.ForeignKey(
