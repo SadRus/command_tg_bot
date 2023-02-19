@@ -25,6 +25,7 @@ def start_keyboard_for_devman():
     btn1 = types.KeyboardButton(text='Актуальные задачи')
     btn2 = types.KeyboardButton(text='Принятые в работу')
     btn3 = types.KeyboardButton(text='Завершенные задачи')
-    return keyboard.add(btn1, btn2, btn3)
+    btn4 = types.KeyboardButton(text='Статистика')
+    return keyboard.add(btn1, btn2, btn3, btn4)
 
 
