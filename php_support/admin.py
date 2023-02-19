@@ -1,12 +1,10 @@
 from django.contrib import admin
-from django.http import HttpResponse
 from django.db.models import Count
 from .models import Client, Devman, Task, Status
 
-from import_export import fields, resources
-from import_export.admin import ImportExportActionModelAdmin, ExportActionMixin, ExportMixin
-from import_export.widgets import ForeignKeyWidget
-from import_export.fields import Field
+from import_export import resources
+from import_export.admin import ExportMixin
+
 
 
 #client
