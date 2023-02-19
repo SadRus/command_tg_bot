@@ -71,6 +71,14 @@ def main():
                     message.chat.id,
                     text = f'Заголовок: {task.title}\nОписание: {task.description}',
                 )
+        elif message.text == 'Статистика':
+            total_task_done = Task.objects.filter(devman__user_id=user_id, status__name='Done').count()
+            salary = Devman.objects.get(user_id=user_id).salary
+            total_money = total_task_done * salary
+            bot.send_message(
+                message.chat.id,
+                text = f'Всего задач закрыто: {total_task_done}\nСтавка: {salary}\nВсего заработано: {total_money} rub'
+            )
 
 
         # Функционал заказчика (условное разделение)

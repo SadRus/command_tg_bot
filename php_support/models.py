@@ -4,7 +4,6 @@ from django.db import models
 class Client(models.Model):
     username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
-    pay = models.IntegerField('Ставка', default=1000)
     user_id = models.IntegerField(
         'User_id',
         null=True,
@@ -18,6 +17,7 @@ class Client(models.Model):
 class Devman(models.Model):
     username = models.CharField('Имя', max_length=50)
     is_access = models.BooleanField('Доступ', default=False)
+    salary = models.IntegerField('Ставка', default=1000)
     user_id = models.IntegerField(
         'User_id',
         null=True,
