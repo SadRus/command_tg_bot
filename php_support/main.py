@@ -98,7 +98,7 @@ def main():
         elif message.text == 'Создать задачу':
             bot.send_message(
                 message.chat.id,
-                'Используйте формат:\nЗадача - описание',
+                'Используйте формат:\nЗадача - описание\n(в описании укажите данные для доступа к PHP-админке сайта)',
             )
         elif '-' in message.text:
             taskname, description = message.text.split('-')
