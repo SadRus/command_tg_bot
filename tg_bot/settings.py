@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'php_support',
+    'import_export',
 ]
 
 MIDDLEWARE = [
