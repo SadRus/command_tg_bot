@@ -8,7 +8,7 @@ import markups
 
 load_dotenv()
 
-API_TOKEN = os.environ.get('TG_TOKEN')
+API_TOKEN = os.environ.get('TG_BOT_TOKEN')
 
 bot = telebot.TeleBot(API_TOKEN)
 telebot.logger.setLevel(logging.DEBUG)
@@ -78,14 +78,17 @@ def check_callback_data(callback):
 def check_callback(callback):
     if callback.message:
         if callback.data == 'task_help':
-            bot.edit_message_text(chat_id=callback.message.chat.id,
-                                  message_id=callback.message.id,
-                                  text='Введите свой вопрос, отправим заказчику')
-
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.id,
+                text='Введите свой вопрос, отправим заказчику'
+            )
         elif callback.data == 'task_close':
-            bot.edit_message_text(chat_id=callback.message.chat.id,
-                                  message_id=callback.message.id,
-                                  text='Статус изменен на "завершена". Требуется подтверждение клиента.')
+            bot.edit_message_text(
+                chat_id=callback.message.chat.id,
+                message_id=callback.message.id,
+                text='Статус изменен на "завершена". Требуется подтверждение клиента.'
+            )
 
 
 bot.infinity_polling()
