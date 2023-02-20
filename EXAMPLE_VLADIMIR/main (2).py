@@ -63,6 +63,7 @@ def help(message):
     reference = 'Для получения дополнительной информации:\n'
     bot.send_message(message.chat.id, reference, reply_markup=markups.help_inline_keyboard())
 
+<<<<<<< HEAD
 
 # --------- Вариант без удаления сообщения
 @bot.callback_query_handler(func=lambda callback: callback.data)
