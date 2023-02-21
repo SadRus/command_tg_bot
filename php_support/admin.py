@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.db.models import Count
 from .models import Client, Devman, Task, Status
 
-from import_export import resources
 from import_export.admin import ExportMixin
 
 
@@ -14,11 +12,13 @@ class ClientTasksInline(admin.TabularInline):
         'status',
     )
     readonly_fields = ('title', )
+    extra = 0
 
 
+@admin.register(Client)
 class ClientAdmin(ExportMixin, admin.ModelAdmin):
     search_fields = ('username', 'user_id')
-    #readonly_fields = ('username', 'user_id')
+    readonly_fields = ('username', 'user_id')
     list_editable = ('is_access', )
     list_filter = ('is_access', )
     list_display = [
@@ -28,16 +28,10 @@ class ClientAdmin(ExportMixin, admin.ModelAdmin):
         'tasks_count'
     ]
     inlines = [ClientTasksInline]
-    #resource_classes = [ClientResource]
+
     @admin.display(description='Всего задач')
     def tasks_count(self, obj):
         return obj.tasks.count()
-
-#devman
-class DevmanResource(resources.ModelResource):
-
-    class Meta:
-        model = Devman
 
 
 class DevmanTasksInline(admin.TabularInline):
@@ -51,6 +45,7 @@ class DevmanTasksInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Devman)
 class DevmanAdmin(ExportMixin, admin.ModelAdmin):
     search_fields = ('username', 'user_id')
     readonly_fields = ('username', 'user_id')
@@ -62,13 +57,13 @@ class DevmanAdmin(ExportMixin, admin.ModelAdmin):
         'user_id',
     ]
     inlines = [DevmanTasksInline]
-    resource_classes = [DevmanResource]
     
+    @admin.display(description='Всего задач')
     def tasks_count(self, obj):
         return obj.tasks.count()
 
 
-#task
+@admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     search_fields = ('title', )
     readonly_fields = ('client', 'date_start')
@@ -82,7 +77,4 @@ class TaskAdmin(admin.ModelAdmin):
     ]
 
 
-admin.site.register(Client, ClientAdmin)
-admin.site.register(Devman, DevmanAdmin)
-admin.site.register(Task, TaskAdmin)
 admin.site.register(Status)

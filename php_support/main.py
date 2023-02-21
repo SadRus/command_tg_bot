@@ -1,6 +1,7 @@
 import os
 import telebot
 
+from django.utils import timezone
 from dotenv import load_dotenv
 from telebot import types
 from php_support import db, markups
@@ -174,29 +175,30 @@ def main():
     # Обработчик inlinekeyboard (условное разделение)
     @bot.callback_query_handler(func=lambda f: True)
     def callback_button1(callback_query: types.CallbackQuery):
-        # if Devman.objects.get(user_id=callback_query.from_user.id).is_access or \
-        # Client.objects.get(user_id=callback_query.from_user.id).is_access:
-        if 'take_task' in callback_query.data:
-            task_id = int(callback_query.data[9:])
-            task = Task.objects.get(id=task_id)
-            task.devman = Devman.objects.get(
-                user_id=callback_query.from_user.id
-            )
-            task.status = Status.objects.get(name='In progress')
-            task.save()
-            bot.answer_callback_query(
-                callback_query.id,
-                'Задача взята в работу',
-            )
-        elif 'end_task' in callback_query.data:
-            task_id = int(callback_query.data[8:])
-            task = Task.objects.get(id=task_id)
-            task.status = Status.objects.get(name='Done')
-            task.save()
-            bot.answer_callback_query(
-                callback_query.id,
-                'Задача сдана заказчику',
-            )       
+        user_id = callback_query.from_user.id
+        if Devman.objects.get(user_id=user_id).is_access:
+            if 'take_task' in callback_query.data:
+                task_id = int(callback_query.data[9:])
+                task = Task.objects.get(id=task_id)
+                task.devman = Devman.objects.get(
+                    user_id=callback_query.from_user.id
+                )
+                task.status = Status.objects.get(name='In progress')
+                task.save()
+                bot.answer_callback_query(
+                    callback_query.id,
+                    'Задача взята в работу',
+                )
+            elif 'end_task' in callback_query.data:
+                task_id = int(callback_query.data[8:])
+                task = Task.objects.get(id=task_id)
+                task.status = Status.objects.get(name='Done')
+                task.date_end = timezone.now()
+                task.save()
+                bot.answer_callback_query(
+                    callback_query.id,
+                    'Задача сдана заказчику',
+                )       
         else:
             bot.answer_callback_query(
                 callback_query.id,
