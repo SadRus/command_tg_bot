@@ -38,28 +38,31 @@ def get_devman_all_tasks(user_id):
     return Task.objects.filter(devman__user_id=user_id)
     
 def get_devman_inprogress_tasks(user_id):
-    return Task.objects.filter(devman__user_id=user_id, status__name='In progress')
+    return Task.objects.filter(devman__user_id=user_id,
+                               status__name='In progress')
 
 def get_devman_done_tasks(user_id):
-    return Task.objects.filter(devman__user_id=user_id, status__name='Done')
+    return Task.objects.filter(devman__user_id=user_id,
+                               status__name='Done')
 
 def check_devman_access(user_id):
     if Devman.objects.get(user_id).is_access:
         return True
     return False
 
-
 # client funcs
 def get_client_all_tasks(user_id):
     return Task.objects.filter(client__user_id=user_id)
 
 def get_client_inprogress_tasks(user_id):
-    return Task.objects.filter(client__user_id=user_id, status__name='In progress')
+    return Task.objects.filter(client__user_id=user_id,
+                               status__name='In progress')
 
 def get_client_done_tasks(user_id):
-    return Task.objects.filter(client__user_id=user_id, status__name='Done')
+    return Task.objects.filter(client__user_id=user_id,
+                               status__name='Done')
 
-def check_client_access(user_id):
-    if Client.objects.get(user_id).is_access:
-        return True
-    return False
+# def check_client_access(user_id):
+#     if Client.objects.get(user_id).is_access:
+#         return True
+#     return False

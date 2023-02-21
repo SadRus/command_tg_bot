@@ -6,14 +6,6 @@ from import_export import resources
 from import_export.admin import ExportMixin
 
 
-
-#client
-class ClientResource(resources.ModelResource):
-
-    class Meta:
-        model = Client
-
-
 class ClientTasksInline(admin.TabularInline):
     model = Task
     fk_name = 'client'
@@ -26,7 +18,7 @@ class ClientTasksInline(admin.TabularInline):
 
 class ClientAdmin(ExportMixin, admin.ModelAdmin):
     search_fields = ('username', 'user_id')
-    readonly_fields = ('username', 'user_id')
+    #readonly_fields = ('username', 'user_id')
     list_editable = ('is_access', )
     list_filter = ('is_access', )
     list_display = [
@@ -36,8 +28,8 @@ class ClientAdmin(ExportMixin, admin.ModelAdmin):
         'tasks_count'
     ]
     inlines = [ClientTasksInline]
-    resource_classes = [ClientResource]
-
+    #resource_classes = [ClientResource]
+    @admin.display(description='Всего задач')
     def tasks_count(self, obj):
         return obj.tasks.count()
 
