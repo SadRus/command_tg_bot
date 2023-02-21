@@ -1,5 +1,5 @@
 from django.utils import timezone
-from php_support.models import Task, Client, Status, Devman
+from php_support.models import Task, Client, Devman
 
 
 def create_task(client, taskname, description, status):
@@ -26,7 +26,6 @@ def create_client(username, user_id):
     )
 
 
-
 def get_created_tasks(user_id):
     return Task.objects.filter(status__name='Created')
 
@@ -38,15 +37,12 @@ def get_devman_all_tasks(user_id):
     return Task.objects.filter(devman__user_id=user_id)
     
 def get_devman_inprogress_tasks(user_id):
-    return Task.objects.filter(devman__user_id=user_id, status__name='In progress')
+    return Task.objects.filter(devman__user_id=user_id,
+                               status__name='In progress')
 
 def get_devman_done_tasks(user_id):
-    return Task.objects.filter(devman__user_id=user_id, status__name='Done')
-
-def check_devman_access(user_id):
-    if Devman.objects.get(user_id).is_access:
-        return True
-    return False
+    return Task.objects.filter(devman__user_id=user_id,
+                               status__name='Done')
 
 
 # client funcs
@@ -54,12 +50,9 @@ def get_client_all_tasks(user_id):
     return Task.objects.filter(client__user_id=user_id)
 
 def get_client_inprogress_tasks(user_id):
-    return Task.objects.filter(client__user_id=user_id, status__name='In progress')
+    return Task.objects.filter(client__user_id=user_id,
+                               status__name='In progress')
 
 def get_client_done_tasks(user_id):
-    return Task.objects.filter(client__user_id=user_id, status__name='Done')
-
-def check_client_access(user_id):
-    if Client.objects.get(user_id).is_access:
-        return True
-    return False
+    return Task.objects.filter(client__user_id=user_id,
+                               status__name='Done')
